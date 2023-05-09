@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonogameUtilities", "MonogameUtilities\MonogameUtilities.csproj", "{3B11C804-DD7D-4225-A390-8A93F678CE3E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3B11C804-DD7D-4225-A390-8A93F678CE3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B11C804-DD7D-4225-A390-8A93F678CE3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B11C804-DD7D-4225-A390-8A93F678CE3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B11C804-DD7D-4225-A390-8A93F678CE3E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F13BFA01-A4A0-4DA3-8AEB-287D529903DD}
+	EndGlobalSection
+EndGlobal
