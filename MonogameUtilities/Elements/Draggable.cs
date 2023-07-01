@@ -14,7 +14,7 @@ namespace MonogameUtilities.Elements
         public int dragScale = 1;
         bool LockMouse;
 
-        public Draggable(int x, int y, int width, int height, IElement parent, bool lockMouseDuringDrag, Hitbox dragRegion) : base(x, y, width, height, parent) 
+        public Draggable(int x, int y, int width, int height, IElement parent, bool lockMouseDuringDrag, Hitbox dragRegion = null) : base(x, y, width, height, parent) 
         { 
             if (dragRegion != null)
             {

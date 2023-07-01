@@ -12,22 +12,29 @@ namespace MonogameUtilities.Elements
     public class Mask : Element
     {
         // Sprite batch options
-        SpriteSortMode sortMode = SpriteSortMode.Deferred;
-        BlendState blendState = null;
-        SamplerState samplerState = null;
-        DepthStencilState depthStencilState = null;
-        RasterizerState rasterizerState = null;
-        Matrix? transformMatrix = null;
+        internal SpriteSortMode sortMode = SpriteSortMode.Deferred;
+        internal BlendState blendState = null;
+        internal SamplerState samplerState = null;
+        internal DepthStencilState depthStencilState = null;
+        internal RasterizerState rasterizerState = null;
+        internal Matrix? transformMatrix = null;
 
-        Texture2D MaskTexture;
-        Effect MaskEffect;
+        internal Texture2D MaskTexture;
+        internal Effect MaskEffect;
         // If should draw the child textures with the given sprite batch first
-        bool FirstPass;
+        internal bool FirstPass;
 
-        public Mask(int x, int y, int width, int height, IElement parent, Texture2D maskTexture, bool firstPass = false) : base(x, y, width, height, parent)
+        public Mask(int x, int y, int width, int height, IElement parent, Texture2D maskTexture, bool firstPass = false, Effect maskEffect = null) : base(x, y, width, height, parent)
         {
             MaskTexture = maskTexture;
-            MaskEffect = GlobalData.StaticContentReference.Load<Effect>("Effects/Mask");
+            if (maskEffect == null)
+            {
+                MaskEffect = GlobalData.StaticContentReference.Load<Effect>("Effects/Mask");
+            }
+            else
+            {
+                MaskEffect = maskEffect;
+            }
             FirstPass = firstPass;
         }
 
@@ -38,7 +45,7 @@ namespace MonogameUtilities.Elements
                 base.Draw(sb);
             }
 
-            SpriteBatch maskedSpriteBatch = new SpriteBatch(GlobalData.StaticGraphicsDeviceReference);
+            SpriteBatch maskedSpriteBatch = new(GlobalData.StaticGraphicsDeviceReference);
 
             maskedSpriteBatch.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, MaskEffect, transformMatrix);
 

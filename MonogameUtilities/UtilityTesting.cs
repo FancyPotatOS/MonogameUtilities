@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using MonogameUtilities.Elements;
 using MonogameUtilities.Information;
 using MonogameUtilities.Demos;
+using MonogameUtilities.Hitboxes;
 
 namespace MonogameUtilities
 {
@@ -48,11 +49,15 @@ namespace MonogameUtilities
 
             Texture2D rainWorldTex = Content.Load<Texture2D>("rain_world");
             Texture2D rainWorldMask = Content.Load<Texture2D>("rain_world_mask");
-            Mask maskElement = new Mask(10, 10, rainWorldTex.Width, rainWorldTex.Height, null, rainWorldMask);
-            ImageElement imgElement = new ImageElement(10, 10, rainWorldTex.Width, rainWorldTex.Height, null, rainWorldTex);
+            Hitbox maskBounds = new(10, 10, rainWorldTex.Width, rainWorldTex.Height);
+            StaticMask staticMaskElement = new(10, 10, rainWorldTex.Width, rainWorldTex.Height, null, rainWorldMask, maskBounds, 1);
+            ImageElement imgElement = new(10, 10, rainWorldTex.Width, rainWorldTex.Height, null, rainWorldTex);
 
-            maskElement.AddChild(imgElement);
-            canvas.AddChild(maskElement);
+            Draggable dragElement = new(10, 10, rainWorldTex.Width, rainWorldTex.Height, null, false);
+
+            staticMaskElement.AddChild(imgElement);
+            dragElement.AddChild(staticMaskElement);
+            canvas.AddChild(dragElement);
 
             pixel = Content.Load<Texture2D>("pixel");
         }

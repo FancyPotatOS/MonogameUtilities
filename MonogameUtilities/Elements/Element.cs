@@ -129,7 +129,7 @@ namespace MonogameUtilities.Elements
         /// <param name="bounding">Hitbox to intersect with</param>
         public virtual void Intersect(Hitbox bounding, int margin)
         {
-            Hitbox boundWithMargins = new Hitbox(Bounds.X + margin, Bounds.Y + margin, Bounds.Width - 2 * margin, Bounds.Height - 2 * margin);
+            Hitbox boundWithMargins = new(Bounds.X + margin, Bounds.Y + margin, Bounds.Width - 2 * margin, Bounds.Height - 2 * margin);
             if (boundWithMargins.Outside(bounding))
             {
                 int dX = 0;
@@ -175,6 +175,8 @@ namespace MonogameUtilities.Elements
         public virtual void AddPos(Point pos)
         {
             Bounds.ShiftBy(pos);
+
+            Children.ForEach(child => child.AddPos(pos));
         }
 
         public virtual void AddChild(IElement child)
