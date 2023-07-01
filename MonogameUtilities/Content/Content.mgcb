@@ -43,6 +43,12 @@
 /processorParam:DebugMode=Auto
 /build:Effects/Pixelated.fx
 
+#begin Effects/StaticMask.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/StaticMask.fx
+
 #begin Effects/Teleport.fx
 /importer:EffectImporter
 /processor:EffectProcessor
