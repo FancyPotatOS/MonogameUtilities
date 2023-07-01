@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonogameUtilities.Hitboxes;
 using MonogameUtilities.Information;
 using System;
@@ -25,11 +26,9 @@ namespace MonogameUtilities.Elements
             return parentUpdate;
         }
 
-        public override void Draw()
+        public override void Draw(SpriteBatch sb)
         {
-            GlobalData.Draw(UtilityTesting.pixel, Bounds.AsRectangle(), Color.Bisque);
-
-            base.Draw();
+            base.Draw(sb);
         }
 
         public override void Move(Point change)

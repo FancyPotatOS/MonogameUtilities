@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonogameUtilities.Elements;
 using MonogameUtilities.Information;
-using System.IO.Pipes;
+using MonogameUtilities.Demos;
 
 namespace MonogameUtilities
 {
@@ -11,6 +11,8 @@ namespace MonogameUtilities
     {
         static GraphicsDeviceManager _graphics;
         static SpriteBatch _spriteBatch;
+
+        public static float TotalSeconds;
 
         readonly Canvas canvas = new(0, 0, 0, 0);
 
@@ -43,31 +45,6 @@ namespace MonogameUtilities
             GlobalData.StaticSpriteBatchReference = _spriteBatch;
             GlobalData.Cursor = Content.Load<Texture2D>("cursor");
 
-            /**/
-            Texture2D spyglass = Content.Load<Texture2D>("spyglass32");
-            ImageElement spyglassElement = new(0, 0, spyglass.Width, spyglass.Height, null, spyglass)
-            {
-                Layer = 1
-            };
-            canvas.AddChild(spyglassElement);
-            /**/
-
-            /**/
-            Texture2D map = Content.Load<Texture2D>("map");
-            ImageElement mapElement = new(5, 5, map.Width, map.Height, null, map);
-            /**/
-
-            Draggable dragElement = new(5, 5, map.Width, map.Height, canvas, true, spyglassElement.Bounds)
-            {
-                Layer = 2,
-                dragScale = -1
-            };
-            canvas.AddChild(dragElement);
-
-            IntersectingElement intersectElement = new(5, 5, spyglass.Width, spyglass.Height, dragElement, spyglass.Width / 2, spyglassElement.Bounds);
-            intersectElement.AddChild(mapElement);
-            dragElement.AddChild(intersectElement);
-
             pixel = Content.Load<Texture2D>("pixel");
         }
 
@@ -75,6 +52,8 @@ namespace MonogameUtilities
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            TotalSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             MouseManager.Update();
 
@@ -85,11 +64,11 @@ namespace MonogameUtilities
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
-            _spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null);
+            _spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap);
 
-            canvas.Draw();
+            canvas.Draw(_spriteBatch);
             GlobalData.DrawCursor();
 
             _spriteBatch.End();

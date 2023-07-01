@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonogameUtilities.Hitboxes;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace MonogameUtilities.Elements
         /// <returns>Whether should be removed from parent</returns>
         public bool Update();
 
-        public void Draw();
+        public void Draw(SpriteBatch sb);
 
         public int GetLayer();
 

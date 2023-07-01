@@ -1,6 +1,7 @@
 ﻿
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonogameUtilities.Hitboxes;
 using System;
 using System.Collections.Generic;
@@ -48,11 +49,11 @@ namespace MonogameUtilities.Elements
             return false; 
         }
 
-        public virtual void Draw()
+        public virtual void Draw(SpriteBatch sb)
         {
             foreach (IElement child in Children.OrderBy(element => element.GetLayer()).Reverse())
             {
-                child.Draw();
+                child.Draw(sb);
             }
         }
         public virtual void Click() { }

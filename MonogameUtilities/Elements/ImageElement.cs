@@ -44,12 +44,12 @@ namespace MonogameUtilities.Elements
             }
         }
 
-        public override void Draw()
+        public override void Draw(SpriteBatch sb)
         {
             Rectangle rect = ImageBounds.AsRectangle();
-            GlobalData.Draw(Texture, rect, Tint);
+            GlobalData.Draw(Texture, rect, Tint, sb);
 
-            base.Draw();
+            base.Draw(sb);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using MonogameUtilities.Hitboxes;
+﻿using Microsoft.Xna.Framework.Graphics;
+using MonogameUtilities.Hitboxes;
 using MonogameUtilities.Information;
 using System;
 using System.Collections.Generic;
@@ -115,14 +116,14 @@ namespace MonogameUtilities.Elements
         /// <summary>
         /// Draws each element by ascending layer
         /// </summary>
-        public override void Draw()
+        public override void Draw(SpriteBatch sb)
         {
             foreach (var element in Children.OrderBy(ele => ele.GetLayer()))
             {
-                element.Draw();
+                element.Draw(sb);
             }
 
-            base.Draw();
+            base.Draw(sb);
         }
 
         public override int GetLayer() { return -1; }
