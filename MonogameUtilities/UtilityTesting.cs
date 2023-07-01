@@ -42,8 +42,17 @@ namespace MonogameUtilities
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            GlobalData.StaticSpriteBatchReference = _spriteBatch;
+            GlobalData.StaticGraphicsDeviceReference = GraphicsDevice;
+            GlobalData.StaticContentReference = Content;
             GlobalData.Cursor = Content.Load<Texture2D>("cursor");
+
+            Texture2D rainWorldTex = Content.Load<Texture2D>("rain_world");
+            Texture2D rainWorldMask = Content.Load<Texture2D>("rain_world_mask");
+            Mask maskElement = new Mask(10, 10, rainWorldTex.Width, rainWorldTex.Height, null, rainWorldMask);
+            ImageElement imgElement = new ImageElement(10, 10, rainWorldTex.Width, rainWorldTex.Height, null, rainWorldTex);
+
+            maskElement.AddChild(imgElement);
+            canvas.AddChild(maskElement);
 
             pixel = Content.Load<Texture2D>("pixel");
         }
@@ -64,12 +73,12 @@ namespace MonogameUtilities
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap);
 
             canvas.Draw(_spriteBatch);
-            GlobalData.DrawCursor();
+            GlobalData.DrawCursor(_spriteBatch);
 
             _spriteBatch.End();
 
