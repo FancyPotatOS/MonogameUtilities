@@ -1,17 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonogameUtilities.Hitboxes
 {
-    public class Hitbox : IPoint
+    public class Hitbox
     {
-        public float X, Y, Width, Height;
+        public int X, Y, Width, Height;
 
         public Hitbox() { }
 
@@ -23,19 +16,29 @@ namespace MonogameUtilities.Hitboxes
             Height = h;
         }
 
-        public float[] GetPoint()
+        public Point GetPoint()
         {
-            return new float[] { X, Y };
+            return new Point(X, Y);
         }
 
-        public float RightSide
+        public int RightSide
         {
             get { return X + Width; }
         }
 
-        public float BottomSide
+        public int BottomSide
         {
             get { return Y + Height; }
+        }
+
+        /// <summary>
+        /// Shifts hitbox position by point
+        /// </summary>
+        /// <param name="pos"></param>
+        public void ShiftBy(Point pos)
+        {
+            X += pos.X;
+            Y += pos.Y;
         }
 
         /// <summary>
@@ -112,7 +115,7 @@ namespace MonogameUtilities.Hitboxes
 
         public Rectangle AsRectangle()
         {
-            return new Rectangle((int)X, (int)Y, (int)Width, (int)Height);
+            return new Rectangle(X, Y, Width, Height);
         }
     }
 }

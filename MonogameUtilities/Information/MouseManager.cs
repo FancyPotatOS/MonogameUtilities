@@ -1,11 +1,6 @@
 ﻿
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonogameUtilities.Information
 {
@@ -26,9 +21,11 @@ namespace MonogameUtilities.Information
 
         public static void Update()
         {
-            Microsoft.Xna.Framework.Input.MouseState ms = Mouse.GetState();
+            MouseState ms = Mouse.GetState();
 
             point = ms.Position;
+            point.X /= GlobalData.Scale;
+            point.Y /= GlobalData.Scale;
 
             int swv = Mouse.GetState().ScrollWheelValue;
             dScrollWheelValue = swv - scrollWheelValue;
@@ -41,6 +38,17 @@ namespace MonogameUtilities.Information
             leftClick = ms.LeftButton == ButtonState.Pressed;
             middleClick = ms.MiddleButton == ButtonState.Pressed;
             rightClick = ms.RightButton == ButtonState.Pressed;
+        }
+
+        /// <summary>
+        /// Returns how much the mouse was rounded by
+        /// </summary>
+        /// <returns></returns>
+        public static Point GetMouseRounded()
+        {
+            MouseState ms = Mouse.GetState();
+            Point rounded = new Point(ms.Position.X % GlobalData.Scale, ms.Position.Y % GlobalData.Scale);
+            return rounded;
         }
     }
 }

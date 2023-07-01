@@ -8,19 +8,19 @@ namespace MonogameUtilities.Elements
     /// </summary>
     public class Clickable : Draggable
     {
-        public Clickable(int x, int y, int width, int height, IElement parent) : base(x, y, width, height, parent) { }
+        public Clickable(int x, int y, int width, int height, IElement parent) : base(x, y, width, height, parent, false, null) { }
 
-        public override void Clicked() { }
+        public override void Click() { }
 
         public override bool DragMid()
         {
-            float startX = bound.X;
-            float startY = bound.Y;
+            int startX = Bounds.X;
+            int startY = Bounds.Y;
 
             bool consumed = base.DragMid();
 
-            bound.X = startX;
-            bound.Y = startY;
+            Bounds.X = startX;
+            Bounds.Y = startY;
 
             return consumed;
         }

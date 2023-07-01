@@ -2,9 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonogameUtilities.Elements;
-using MonogameUtilities.Hitboxes;
 using MonogameUtilities.Information;
-using System;
+using System.IO.Pipes;
 
 namespace MonogameUtilities
 {
@@ -13,11 +12,7 @@ namespace MonogameUtilities
         static GraphicsDeviceManager _graphics;
         static SpriteBatch _spriteBatch;
 
-        public const float scale = 1;
-        public const int windowWidth = 600;
-        public const int windowHeight = 400;
-
-        readonly BoundingCanvas canvas = new(50, 50, 200, 100);
+        readonly Canvas canvas = new(0, 0, 0, 0);
 
         public static Texture2D pixel;
 
@@ -27,16 +22,12 @@ namespace MonogameUtilities
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-            _graphics.PreferredBackBufferHeight = windowHeight;
-            _graphics.PreferredBackBufferWidth = windowWidth;
+            _graphics.PreferredBackBufferHeight = GlobalData.WindowHeight * GlobalData.Scale;
+            _graphics.PreferredBackBufferWidth = GlobalData.WindowWidth * GlobalData.Scale;
             IsFixedTimeStep = true;
-            TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
+            TargetElapsedTime = GlobalData.TargetElapsedTime;
+            IsMouseVisible = false;
             _graphics.ApplyChanges();
-
-            canvas.AddElement(new ClickableElement(10, 10, 50, 20, canvas));
-            canvas.AddElement(new DraggableElement(10, 10, 50, 20, Color.Gray, canvas));
-            canvas.AddElement(new DraggableElement(10, 10, 50, 20, Color.Gray, canvas));
-            canvas.AddElement(new DraggableElement(10, 10, 50, 20, Color.Gray, canvas));
         }
 
         protected override void Initialize()
@@ -49,6 +40,33 @@ namespace MonogameUtilities
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            GlobalData.StaticSpriteBatchReference = _spriteBatch;
+            GlobalData.Cursor = Content.Load<Texture2D>("cursor");
+
+            /**/
+            Texture2D spyglass = Content.Load<Texture2D>("spyglass32");
+            ImageElement spyglassElement = new(0, 0, spyglass.Width, spyglass.Height, null, spyglass)
+            {
+                Layer = 1
+            };
+            canvas.AddChild(spyglassElement);
+            /**/
+
+            /**/
+            Texture2D map = Content.Load<Texture2D>("map");
+            ImageElement mapElement = new(5, 5, map.Width, map.Height, null, map);
+            /**/
+
+            Draggable dragElement = new(5, 5, map.Width, map.Height, canvas, true, spyglassElement.Bounds)
+            {
+                Layer = 2,
+                dragScale = -1
+            };
+            canvas.AddChild(dragElement);
+
+            IntersectingElement intersectElement = new(5, 5, spyglass.Width, spyglass.Height, dragElement, spyglass.Width / 2, spyglassElement.Bounds);
+            intersectElement.AddChild(mapElement);
+            dragElement.AddChild(intersectElement);
 
             pixel = Content.Load<Texture2D>("pixel");
         }
@@ -72,19 +90,11 @@ namespace MonogameUtilities
             _spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null);
 
             canvas.Draw();
+            GlobalData.DrawCursor();
 
             _spriteBatch.End();
 
             base.Draw(gameTime);
-        }
-
-        public static void Draw(Texture2D tex, Rectangle bound, Color color)
-        {
-            bound.X = (int)(bound.X * scale);
-            bound.Y = (int)(bound.Y * scale);
-            bound.Width = (int)(bound.Width * scale);
-            bound.Height = (int)(bound.Height * scale);
-            _spriteBatch.Draw(tex, bound, color);
         }
     }
 }

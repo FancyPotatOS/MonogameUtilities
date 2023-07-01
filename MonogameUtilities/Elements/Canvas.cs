@@ -6,23 +6,21 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 using System.Xml.Linq;
 
 namespace MonogameUtilities.Elements
 {
-    public class Canvas : IElement
+    public class Canvas : Element
     {
         internal bool WasClicking = false;
 
-        internal List<IElement> elements;
         internal List<IElement> RemovingElements;
-
         public IElement focus;
 
-        public int TopLayer { get; set; }
 
-        public Canvas() {
-            elements = new List<IElement>();
+        public Canvas(int x = 0, int y = 0, int width = 0, int height = 0, IElement parent = null) : base(x, y, width, height, parent) {
+            Children = new List<IElement>();
             RemovingElements = new List<IElement>();
         }
 
@@ -30,24 +28,24 @@ namespace MonogameUtilities.Elements
         {
             element.SetParent(this);
 
-            elements.Add(element);
+            Children.Add(element);
         }
 
         public virtual void RemoveElement(IElement element)
         {
             element.SetParent(null);
 
-            elements.Remove(element);
+            Children.Remove(element);
         }
 
         /// <summary>
         /// Updates each element by descending layer
         /// </summary>
-        public virtual bool Update()
+        public override bool Update()
         {
             bool leftClickConsumed = false;
 
-            foreach (var element in elements.OrderBy(ele => ele.GetLayer()).Reverse())
+            foreach (var element in Children.OrderBy(ele => ele.GetLayer()).Reverse())
             {
                 if (element is Draggable draggable)
                 {
@@ -56,14 +54,18 @@ namespace MonogameUtilities.Elements
                         if (MouseManager.newLeftClick && !leftClickConsumed)
                         {
                             leftClickConsumed = draggable.DragStart();
+                            /** /
                             if (leftClickConsumed)
                                 focus = draggable;
+                            /**/
                         }
                         if (!MouseManager.newLeftClick && !leftClickConsumed)
                         {
                             leftClickConsumed = draggable.DragMid();
+                            /** /
                             if (leftClickConsumed)
                                 focus = draggable;
+                            /**/
                         }
                     }
                     else if (WasClicking)
@@ -71,8 +73,10 @@ namespace MonogameUtilities.Elements
                         if (!leftClickConsumed)
                         {
                             leftClickConsumed = draggable.DragEnd();
+                            /** /
                             if (leftClickConsumed)
                                 focus = draggable;
+                            /**/
                         }
                     }
                 }
@@ -87,9 +91,11 @@ namespace MonogameUtilities.Elements
 
             UpdateElements();
 
-            elements.RemoveAll(x => RemovingElements.Contains(x));
+            Children.RemoveAll(x => RemovingElements.Contains(x));
             RemovingElements.ForEach(element => element.SetParent(null));
             RemovingElements = new List<IElement>();
+
+            base.Update();
 
             return false;
         }
@@ -97,7 +103,7 @@ namespace MonogameUtilities.Elements
         private void UpdateElements()
         {
 
-            foreach (var element in elements.OrderBy(ele => ele.GetLayer()).Reverse())
+            foreach (var element in Children.OrderBy(ele => ele.GetLayer()).Reverse())
             {
                 if (element.Update())
                 {
@@ -109,16 +115,18 @@ namespace MonogameUtilities.Elements
         /// <summary>
         /// Draws each element by ascending layer
         /// </summary>
-        public virtual void Draw()
+        public override void Draw()
         {
-            foreach (var element in elements.OrderBy(ele => ele.GetLayer()))
+            foreach (var element in Children.OrderBy(ele => ele.GetLayer()))
             {
                 element.Draw();
             }
+
+            base.Draw();
         }
 
-        public virtual int GetLayer() { return -1; }
+        public override int GetLayer() { return -1; }
 
-        public void Bound(Hitbox bound) { }
+        public override void Bound(Hitbox bound) { base.Bound(bound); }
     }
 }
