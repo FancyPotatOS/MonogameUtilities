@@ -1,11 +1,19 @@
 ﻿
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace MonogameUtilities.Information
 {
     public class MouseManager
     {
+        public static Texture2D cursorTexture = null;
+        public static Point cursorSize = new();
+        public static Point cursorScale = new(1);
+        public static Point cursorOffset = new(0);
+        public static Color cursorColor = Color.White;
+        public static SpriteBatch spriteBatch = null;
+
         public static Point point;
 
         public static int scrollWheelValue = Mouse.GetState().ScrollWheelValue;
@@ -27,8 +35,6 @@ namespace MonogameUtilities.Information
             MouseState ms = Mouse.GetState();
 
             point = ms.Position;
-            point.X /= GlobalData.Scale;
-            point.Y /= GlobalData.Scale;
 
             int swv = Mouse.GetState().ScrollWheelValue;
             dScrollWheelValue = swv - scrollWheelValue;
@@ -43,15 +49,9 @@ namespace MonogameUtilities.Information
             rightClick = ms.RightButton == ButtonState.Pressed;
         }
 
-        /// <summary>
-        /// Returns how much the mouse was rounded by
-        /// </summary>
-        /// <returns></returns>
-        public static Point GetMouseRounded()
+        public static void DrawCursor()
         {
-            MouseState ms = Mouse.GetState();
-            Point rounded = new Point(ms.Position.X % GlobalData.Scale, ms.Position.Y % GlobalData.Scale);
-            return rounded;
+            spriteBatch.Draw(cursorTexture, new Rectangle((point + cursorOffset) * cursorScale, cursorSize * cursorScale), cursorColor);
         }
     }
 }
