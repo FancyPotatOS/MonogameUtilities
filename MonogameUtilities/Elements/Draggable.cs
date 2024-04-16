@@ -2,11 +2,14 @@
 using Microsoft.Xna.Framework.Input;
 using MonogameUtilities.Hitboxes;
 using MonogameUtilities.Information;
+using System.Collections.Generic;
 
 namespace MonogameUtilities.Elements
 {
     public class Draggable : Element
     {
+        List<IDragListener> dragListeners;
+
         bool dragging = false;
         Point offsetStart;
         Point dragStart;
@@ -26,6 +29,18 @@ namespace MonogameUtilities.Elements
             }
 
             LockMouse = lockMouseDuringDrag;
+
+            dragListeners = new();
+        }
+
+        public void AddDragListener(IDragListener icl)
+        {
+            dragListeners.Add(icl);
+        }
+
+        public void RemoveDragListener(IDragListener icl)
+        {
+            dragListeners.Remove(icl);
         }
 
         public override void Click() { }
@@ -46,6 +61,11 @@ namespace MonogameUtilities.Elements
 
             if (DragRegion.Contains(mouse))
             {
+                foreach (IDragListener idl in dragListeners)
+                {
+                    idl.OnDragStart(this);
+                }
+
                 SetFocus(this);
 
                 dragging = true;
@@ -76,6 +96,11 @@ namespace MonogameUtilities.Elements
                 foreach (IElement child in Children)
                 {
                     child.AddPos(dMouse);
+                }
+
+                foreach (IDragListener idl in dragListeners)
+                {
+                    idl.OnDragMid(this);
                 }
 
                 // If locking mouse, set mouse position back. Otherwise, set our 'offset' to the current mouse position
@@ -111,6 +136,11 @@ namespace MonogameUtilities.Elements
             {
                 dragging = false;
                 Point mouse = MouseManager.point;
+
+                foreach (IDragListener idl in dragListeners)
+                {
+                    idl.OnDragEnd(this);
+                }
 
                 if (dragStart == mouse)
                 {

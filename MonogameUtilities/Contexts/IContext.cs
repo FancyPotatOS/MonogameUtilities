@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonogameUtilities.States
+namespace MonogameUtilities.Contexts
 {
-    public interface IState
+    public interface IContext
     {
-        public IState Update();
+        public IContext Update();
 
         public void Draw();
     }
