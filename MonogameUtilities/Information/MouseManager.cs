@@ -19,6 +19,9 @@ namespace MonogameUtilities.Information
         public static bool middleClick;
         public static bool rightClick;
 
+        /// <summary>
+        /// Updates all values based on last update
+        /// </summary>
         public static void Update()
         {
             MouseState ms = Mouse.GetState();
