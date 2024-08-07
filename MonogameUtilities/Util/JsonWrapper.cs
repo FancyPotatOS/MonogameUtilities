@@ -1,18 +1,18 @@
 ﻿
 
 using Microsoft.Xna.Framework;
-using MonogameUtilities.Util;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Nodes;
 
-namespace MonogameUtilities.Parsing
+namespace MonogameUtilities.Util
 {
 
-    internal class JsonWrapper : IEnumerable, IList, ICollection
+    public class JsonWrapper : IEnumerable, IList, ICollection
     {
-        private JsonNode _root;
+        private readonly JsonNode _root;
 
         private bool? _isArray;
         private JsonArray _array;
@@ -37,8 +37,12 @@ namespace MonogameUtilities.Parsing
         object IList.this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         // Convert explicitly to an array
-        internal T[] AsArray<T>()
+        public T[] AsArray<T>()
         {
+            if (typeof(T) == typeof(Guid))
+            {
+                return ArrayRef.Select(node => Guid.Parse(node.GetValue<string>())).Cast<T>().ToArray();
+            }
             if (MethodCastTypes.Contains(typeof(T)))
             {
                 return ArrayRef.Cast<T>().ToArray();
@@ -47,29 +51,44 @@ namespace MonogameUtilities.Parsing
             {
                 return ArrayRef.Select(node => node.GetValue<T>()).ToArray();
             }
-            else if (CompoundCastTypes.Select(tpl => tpl.Item1).Contains(typeof(T)))
-            {
-                Func<JsonWrapper, object> convertFunction = CompoundCastTypes.Where(tpl => tpl.Item1 == typeof(T)).Single().Item2;
-
-                return AsCompoundArray().Select(item => convertFunction.Invoke(item)).ToArray().Cast<T>().ToArray();
-            }
             else
             {
                 throw new InvalidCastException($"Type {typeof(T).FullName} is not a supported {nameof(JsonWrapper)}.{nameof(AsArray)}<T>() type");
             }
         }
 
-        internal JsonWrapper[] AsCompoundArray()
+        public Dictionary<string, JsonWrapper> AsDictionary()
+        {
+            if (!IsCompound())
+            {
+                throw new Exception($"Attempted to convert non-compound {nameof(JsonWrapper)} to Dictionary<string, JsonWrapper>.");
+            }
+
+            Dictionary<string, JsonWrapper> dict = new();
+            foreach (string key in _root.AsObject().Select(kvp => kvp.Key))
+            {
+                dict[key] = this[key];
+            }
+
+            return dict;
+        }
+
+        public JsonWrapper[] AsCompoundArray()
         {
             return ArrayRef.Select(node => (JsonWrapper)node).ToArray();
         }
 
-        internal JsonWrapper(JsonNode root)
+        public static JsonWrapper GetJsonWrapper(string jsonRaw)
+        {
+            return new JsonWrapper(JsonNode.Parse(jsonRaw));
+        }
+
+        public JsonWrapper(JsonNode root)
         {
             _root = root;
         }
 
-        internal JsonWrapper this[int index]
+        public JsonWrapper this[int index]
         {
             get
             {
@@ -83,17 +102,22 @@ namespace MonogameUtilities.Parsing
             /**/
         }
 
-        internal int GetArraySize()
+        public int GetArraySize()
         {
             return ArrayRef.Count;
         }
 
-        internal JsonNode GetRaw()
+        public JsonNode GetRaw()
         {
             return _root;
         }
 
-        internal bool HasKey(string path)
+        public bool IsCompound()
+        {
+            return _root is JsonObject || _root is JsonArray;
+        }
+
+        public bool HasKey(string path)
         {
             return this[path] != null;
         }
@@ -105,7 +129,7 @@ namespace MonogameUtilities.Parsing
         /// Capable to access indicies by prefixing it with a $ <br/>
         /// Ex: <em><b>entities.rat.texture.pos.$0</b></em> <br/>
         /// </summary>
-        internal JsonWrapper this[string path]
+        public JsonWrapper this[string path]
         {
             get
             {
@@ -155,7 +179,7 @@ namespace MonogameUtilities.Parsing
                 if (isMultiple)
                 {
                     // Recursive call
-                    return firstRef[string.Concat(splt[1..])];
+                    return firstRef[string.Join('.', splt[1..])];
                 }
                 else
                 {
@@ -179,11 +203,13 @@ namespace MonogameUtilities.Parsing
         public static implicit operator uint(JsonWrapper node) { return node._root.GetValue<uint>(); }
         // (Some special operations)
         public static implicit operator char(JsonWrapper node) { return node._root.GetValue<string>()[0]; }
+        public static implicit operator Guid(JsonWrapper node) { return Guid.Parse(node._root.GetValue<string>()); }
         public static implicit operator bool(JsonWrapper node) { return node._root.GetValue<int>() == 1; }
         public static implicit operator Point(JsonWrapper node) { int[] vals = node.AsArray<int>(); return new Point(vals[0], vals[1]); }
+        public static implicit operator Rectangle(JsonWrapper node) { int[] vals = node.AsArray<int>(); return new Rectangle(vals[0], vals[1], vals[2], vals[3]); }
         public static implicit operator Color(JsonWrapper node)
         {
-            byte[] vals = node.AsArray<byte>();
+            byte[] vals = node.AsArray<byte>(); 
             return new Color(vals[0], vals[1], vals[2], vals.Length >= 4 ? vals[3] : byte.MaxValue);
         }
 
@@ -205,10 +231,8 @@ namespace MonogameUtilities.Parsing
             typeof(char),
             typeof(bool),
             typeof(Point),
-            typeof(Dice),
+            typeof(Dice)
         };
-        // Types derived from compounds, and must be casted to a compound first
-        public static readonly Tuple<Type, Func<JsonWrapper, object>> [] CompoundCastTypes = new Tuple<Type, Func<JsonWrapper, object>>[] {};
 
 
         // List-like interfaces
@@ -223,8 +247,8 @@ namespace MonogameUtilities.Parsing
         {
             private readonly JsonWrapper _root;
             private int _index;
-            private int _max;
-            public JsonWrapperEnumerator(JsonWrapper root)
+            private readonly int _max;
+            public JsonWrapperEnumerator (JsonWrapper root)
             {
                 _root = root;
                 _index = -1;
@@ -277,7 +301,7 @@ namespace MonogameUtilities.Parsing
 
         public int IndexOf(object value)
         {
-            return ArrayRef.IndexOf((JsonNode)value);
+            return ArrayRef.IndexOf((JsonNode) value);
         }
 
         public void Insert(int index, object value)

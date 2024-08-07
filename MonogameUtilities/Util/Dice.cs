@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MonogameUtilities.Util
 {
-    internal class Dice
+    public class Dice
     {
         public enum Operator
         {
@@ -19,7 +19,7 @@ namespace MonogameUtilities.Util
         public Dice NextDice;
         public Operator NextDiceOperator;
 
-        public static Random RNG = new Random();
+        private readonly static Random RNG = new();
 
         public Dice(int rolls, int pips)
         {

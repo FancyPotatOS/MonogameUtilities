@@ -7,7 +7,7 @@ namespace MonogameUtilities.Information
 {
     internal interface IGlobalDataProvider
     {
-        public static IGlobalDataProvider Instance { get; }
+        public static IGlobalDataProvider Instance { get; set; }
 
         public int GetWindowWidth();
         public void SetWindowWidth(int width);
@@ -19,7 +19,7 @@ namespace MonogameUtilities.Information
         public void SetTargetElapsedTime(TimeSpan targetElapsedTime);
 
         public GraphicsDevice GetGraphicsDevice();
-        public void SetGraphicsDevice(GraphicsDevice grahicsDevice);
+        public void SetGraphicsDevice(GraphicsDevice graphicsDevice);
 
         public ContentManager GetContentManager();
         public void SetContentManager(ContentManager contentManager);
