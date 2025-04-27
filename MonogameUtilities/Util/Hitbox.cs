@@ -48,6 +48,11 @@ namespace MonogameUtilities.Util
             get { return new(Width, Height); }
         }
 
+        public Point Center
+        {
+            get { return new(X + Width / 2, Y + Height / 2); }
+        }
+
         /// <summary>
         /// Shifts hitbox position by point
         /// </summary>
